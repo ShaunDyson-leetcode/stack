@@ -40,9 +40,10 @@ console.log(`STACK_SUPER_SECRET_ADMIN_KEY=sak_${generateSecureRandomString()}`)
 console.log()
 console.log(`# .env.backend for backend server and webhooks`)
 console.log(`STACK_SERVER_SECRET=${jose.base64url.encode(crypto.randomBytes(32))}`);
-console.log(`STACK_SVIX_API_KEY=${jose.base64url.encode(crypto.randomBytes(64))}`)
+console.log(`STACK_SVIX_API_KEY=`)
 console.log()
 console.log(`# .env`)
 console.log(`POSTGRES_STACKFRAME_PASSWORD=${generatePassword(20)}`);
 console.log(`POSTGRES_SVIX_PASSWORD=${generatePassword(20)}`);
+console.log(`SVIX_JWT_SECRET=${jose.base64url.encode(crypto.randomBytes(32))}`)
 console.log("#----------------------------------------------------------------")

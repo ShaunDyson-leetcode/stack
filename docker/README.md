@@ -1,96 +1,112 @@
-## Docker - Build
+### Docker - Build at Building Server
 
-### 1. update `.env` in `docker/setup`
+1. **Update Environment Variables**
+   - Navigate to `docker/setup` and update the `.env` file:
+     ```sh
+     cd docker/setup
+     cp .env.development .env
+     cd ../..
+     ```
 
-```sh
-cd docker/setup
-cp .env.development .env
-```
+2. **Create Tokens**
+   - Install dependencies and run the key generation script:
+     ```sh
+     cd docker/setup
+     pnpm i --ignore-workspace
+     pnpm tsx scripts/generateKeys.ts
+     cd ../..
+     ```
 
-1. Create tokens
+3. **Configure Hosts**
+   - Set the following environment variables:
+     ```env
+     NEXT_PUBLIC_STACK_URL=https://api.stack-auth.internal
+     NEXT_PUBLIC_STACK_SVIX_SERVER_URL=https://svix-api.stack-auth.internal
+     NEXT_PUBLIC_STACK_HEAD_TAGS=[{ "tagName": "script", "attributes": {}, "innerHTML": "// insert head tags here" }]
+     ```
 
-```sh
-cd docker/setup
-pnpm i --ignore-workspace
-pnpm tsx scripts/generateKeys.ts
-```
-svix-server jwt generate
-2. set ips
+4. **Sentry Integration**
+   - Set up Sentry variables according to [Sentry's documentation](https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup):
+     ```env
+     NEXT_PUBLIC_SENTRY_DSN=
+     NEXT_PUBLIC_SENTRY_ORG=
+     NEXT_PUBLIC_SENTRY_PROJECT=
+     SENTRY_AUTH_TOKEN=
+     ```
 
-`NEXT_PUBLIC_STACK_URL`, `NEXT_PUBLIC_STACK_SVIX_SERVER_URL` cannot be localhost or 127.0.0.1, for example
-```
-NEXT_PUBLIC_STACK_URL=http://192.168.1.1:8102
-NEXT_PUBLIC_STACK_SVIX_SERVER_URL=http://192.168.1.1:8113
-NEXT_PUBLIC_STACK_HEAD_TAGS=[{ "tagName": "script", "attributes": {}, "innerHTML": "// insert head tags here" }]
-```
+5. **Generate Builder Environment**
+   - Run the builder environment generation script:
+     ```sh
+     cd docker/setup
+     pnpm dotenv -c -- tsx scripts/generateBuilderEnv.ts
+     cd ../..
+     ```
 
-3. sentry
+6. **Build Docker Images**
+   - Navigate to `docker/builder` and build:
+     ```sh
+     cd docker/builder
+     docker compose build
+     cd ..
+     ```
 
-Create sentry auth tokens by [sentry manual setup](https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup), get
-```
-NEXT_PUBLIC_SENTRY_DSN=
-NEXT_PUBLIC_SENTRY_ORG=
-NEXT_PUBLIC_SENTRY_PROJECT=
-SENTRY_AUTH_TOKEN=
-```
+---
 
-4. generate builder env `builder/.env`
+### Services at Deployment Server
 
-```sh
-cd docker/setup
-pnpm dotenv -c -- tsx scripts/generateBuilderEnv.ts
-```
+1. **Prepare Environment Files**
+   - Copy the `.env.dashboard` configuration:
+     ```sh
+     cd docker/setup
+     pnpm dotenv -c -- tsx scripts/generateDashboardEnv.ts
+     cd ../..
+     ```
 
-copy it to `docker/builder/.env`
+2. **Configure `.env` File**
+   - Populate `.env` in `docker/services` with required values from `setup/.env`:
+     - `POSTGRES_STACKFRAME_PASSWORD`
+     - `POSTGRES_SVIX_PASSWORD`
+     - `SVIX_JWT_SECRET`
 
-5. build
-```sh
-cd docker/builder
-docker compose build
-```
+3. **Configure `.env.backend` File**
+   - Include necessary secrets like `STACK_SERVER_SECRET` and `STACK_SVIX_API_KEY`.
+   - Generate the `STACK_SVIX_API_KEY`:
+     ```sh
+     docker compose up svix-server -d
+     docker exec -it <container_id> sh
+     svix-server jwt generate
+     ```
 
-## Services
+4. **Configure Sentry Variables**
+   - Copy Sentry-related variables into `.env.sentry` from `setup/.env`.
 
-### 1. generate dashboard `.env.dashboard`
-```sh
-cd docker/setup
-pnpm dotenv -c -- tsx scripts/generateDashboardEnv.ts
-```
+5. **SSL Certificates**
+   - Place SSL files in the `certs` directory.
 
-### 2. .env.backend
+6. **Start Docker Services**
+   - Start services in detached mode:
+     ```sh
+     cd docker/services
+     docker compose up -d
+     ```
 
-- copy from build/.env
-  - STACK_SERVER_SECRET
-  - STACK_SVIX_API_KEY
-- config emails STACK_EMAIL_
+7. **Initialize Data**
+   - If deploying and building on the same server, run initialization:
+     ```sh
+     cd docker/setup
+     cp -r ../../apps/backend/prisma/ .
+     pnpm prisma generate
+     pnpm prisma migrate deploy
+     pnpm dotenv -c -- tsx scripts/seed.ts
+     ```
+   - Use `pnpm prisma studio` to update ProjectUser, adding `"internal"` to `managedProjectIds`.
 
-### 3.env
+8. **User Signup**
+   - Access `https://stack-auth.internal` and complete the signup process.
+   - Ignore whitelist warnings on first-time signup and proceed to sign in.
 
-```sh
-cd docker/services
-cp .env.development .env
-```
-- copy from build/.env
-  - POSTGRES_STACKFRAME_PASSWORD
-  - POSTGRES_SVIX_PASSWORD
-
-### 4. .env.sentry
-
-- copy from build/.env
-
-### 5. start
-
-```sh
-cd docker/services
-docker compose up -d
-```
-
-### 6. init data
-
-```sh
-cd docker/setup
-cp -r ../../apps/backend/prisma/ .
-pnpm prisma generate
-pnpm prisma migrate deploy
-pnpm dotenv -c -- tsx scripts/seed.ts
-```
+9. **Set Domains and Handlers**
+   - In the Admin project:
+     - Disable localhost.
+     - Add `https://stack-auth.internal` to domains.
+     - Set user to "verified" for otp.

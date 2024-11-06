@@ -104,7 +104,7 @@ services:
       SVIX_REDIS_DSN: redis://svix-redis:6379
       SVIX_DB_DSN: postgres://postgres:${POSTGRES_SVIX_PASSWORD}@svix-db:5432/svix
       SVIX_CACHE_TYPE: memory
-      SVIX_JWT_SECRET: secret
+      SVIX_JWT_SECRET: ${SVIX_JWT_SECRET}
       SVIX_LOG_LEVEL: trace
       SVIX_QUEUE_TYPE: redis
     networks:
