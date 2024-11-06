@@ -29,6 +29,7 @@ export function UserDialog(props: {
       primaryEmailVerified: props.user.primaryEmailVerified,
       signedUpAt: props.user.signedUpAt,
       clientMetadata: props.user.clientMetadata == null ? "" : JSON.stringify(props.user.clientMetadata, null, 2),
+      clientReadOnlyMetadata: props.user.clientReadOnlyMetadata == null ? "" : JSON.stringify(props.user.clientReadOnlyMetadata, null, 2),
       serverMetadata: props.user.serverMetadata == null ? "" : JSON.stringify(props.user.serverMetadata, null, 2),
       passwordEnabled: props.user.hasPassword,
       otpAuthEnabled: props.user.otpAuthEnabled,
@@ -44,8 +45,8 @@ export function UserDialog(props: {
     displayName: yup.string().optional(),
     signedUpAt: yup.date().required(),
     clientMetadata: jsonStringOrEmptySchema.default("null"),
-    serverMetadata: jsonStringOrEmptySchema.default("null"),
     clientReadOnlyMetadata: jsonStringOrEmptySchema.default("null"),
+    serverMetadata: jsonStringOrEmptySchema.default("null"),
     primaryEmailVerified: yup.boolean().optional(),
     password: yup.string().optional(),
     otpAuthEnabled: yup.boolean().test({
@@ -63,6 +64,7 @@ export function UserDialog(props: {
       ...values,
       primaryEmailAuthEnabled: true,
       clientMetadata: values.clientMetadata ? JSON.parse(values.clientMetadata) : undefined,
+      clientReadOnlyMetadata: values.clientReadOnlyMetadata ? JSON.parse(values.clientReadOnlyMetadata) : undefined,
       serverMetadata: values.serverMetadata ? JSON.parse(values.serverMetadata) : undefined
     };
 
@@ -117,7 +119,7 @@ export function UserDialog(props: {
         <Accordion type="single" collapsible>
           <AccordionItem value="item-1">
             <AccordionTrigger>Metadata</AccordionTrigger>
-            <AccordionContent>
+            <AccordionContent className="space-y-4">
               <TextAreaField rows={3} control={form.control} label="Client metadata" name="clientMetadata" placeholder="null" monospace />
               <TextAreaField rows={3} control={form.control} label="Client read only metadata" name="clientReadOnlyMetadata" placeholder="null" monospace />
               <TextAreaField rows={3} control={form.control} label="Server metadata" name="serverMetadata" placeholder="null" monospace />

@@ -65,7 +65,6 @@ export function setCookie(name: string, value: string, options: SetCookieOptions
     Cookies.set(name, value, {
       secure: window.location.protocol === "https:",
       expires: options.maxAge === undefined ? undefined : new Date(Date.now() + (options.maxAge) * 1000),
-      sameSite: "Strict"
     });
   } else {
     let isSecureCookie = !!rscCookies().get("stack-is-https");
