@@ -1,0 +1,35 @@
+# docker-compose.yml
+services:
+  stack-auth-dashboard:
+    image: stack-auth/dashboard
+    build:
+      context: ../..
+      target: dashboard
+      dockerfile: ./docker/builder/Dockerfile
+      args:  # Pass all necessary variables for build
+        NEXT_PUBLIC_STACK_URL: ${NEXT_PUBLIC_STACK_URL}
+        NEXT_PUBLIC_STACK_PROJECT_ID: ${NEXT_PUBLIC_STACK_PROJECT_ID}
+        NEXT_PUBLIC_STACK_PUBLISHABLE_CLIENT_KEY: ${NEXT_PUBLIC_STACK_PUBLISHABLE_CLIENT_KEY}
+        STACK_SECRET_SERVER_KEY: ${STACK_SECRET_SERVER_KEY}
+        NEXT_PUBLIC_STACK_SVIX_SERVER_URL: ${NEXT_PUBLIC_STACK_SVIX_SERVER_URL}
+        NEXT_PUBLIC_STACK_HEAD_TAGS: ${NEXT_PUBLIC_STACK_HEAD_TAGS}
+        NEXT_PUBLIC_SENTRY_DSN: ${NEXT_PUBLIC_SENTRY_DSN}
+        NEXT_PUBLIC_SENTRY_ORG: ${NEXT_PUBLIC_SENTRY_ORG}
+        NEXT_PUBLIC_SENTRY_PROJECT: ${NEXT_PUBLIC_SENTRY_PROJECT}
+        SENTRY_AUTH_TOKEN: ${SENTRY_AUTH_TOKEN}
+    ports:
+      - 8101:8101
+  stack-auth-backend:
+    image: stack-auth/backend
+    build:
+      context: ../..
+      target: backend
+      dockerfile: ./docker/builder/Dockerfile
+      args:  # Pass all necessary variables for build
+        NEXT_PUBLIC_SENTRY_DSN: ${NEXT_PUBLIC_SENTRY_DSN}
+        NEXT_PUBLIC_SENTRY_ORG: ${NEXT_PUBLIC_SENTRY_ORG}
+        NEXT_PUBLIC_SENTRY_PROJECT: ${NEXT_PUBLIC_SENTRY_PROJECT}
+        SENTRY_AUTH_TOKEN: ${SENTRY_AUTH_TOKEN}
+        STACK_SERVER_SECRET: ${STACK_SERVER_SECRET}
+    ports:
+      - 8102:8102

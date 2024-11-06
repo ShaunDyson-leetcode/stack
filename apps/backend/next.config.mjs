@@ -14,8 +14,8 @@ const withConfiguredSentryConfig = (nextConfig) =>
 
       // Suppresses source map uploading logs during build
       silent: true,
-      org: process.env.SENTRY_ORG,
-      project: process.env.SENTRY_PROJECT,
+      org: process.env.NEXT_PUBLIC_SENTRY_ORG,
+      project: process.env.NEXT_PUBLIC_SENTRY_PROJECT,
     },
     {
       // For all available options, see:
@@ -49,6 +49,7 @@ const withConfiguredSentryConfig = (nextConfig) =>
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: "standalone",
   // we're open-source, so we can provide source maps
   productionBrowserSourceMaps: true,
   poweredByHeader: false,

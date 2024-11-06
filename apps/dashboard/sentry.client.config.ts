@@ -6,7 +6,7 @@ import * as Sentry from "@sentry/nextjs";
 import { nicify } from "@stackframe/stack-shared/dist/utils/strings";
 
 Sentry.init({
-  dsn: "https://6e618f142965a385267f1030793e0400@o4507084192022528.ingest.us.sentry.io/4507084192219136",
+  dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
 
   // Adjust this value in production, or use tracesSampler for greater control
   tracesSampleRate: 1,

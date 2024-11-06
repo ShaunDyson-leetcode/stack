@@ -1,0 +1,131 @@
+services:
+  # ================= Stack Auth =================
+
+  stack-auth-backend:
+    container_name: stack-auth.backend
+    image: stack-auth/backend
+    networks:
+      - stack-auth-network
+    environment:
+      STACK_BASE_URL: http://stack-auth-backend:8102
+      STACK_SVIX_SERVER_URL: http://svix-server:8071
+      STACK_DATABASE_CONNECTION_STRING: postgres://postgres:${POSTGRES_STACKFRAME_PASSWORD}@db:5432/stackframe
+      STACK_DIRECT_DATABASE_CONNECTION_STRING: postgres://postgres:${POSTGRES_STACKFRAME_PASSWORD}@db:5432/stackframe
+    env_file:
+      - .env.backend
+      - .env.sentry
+    ports:
+      - 8102:8102
+    depends_on:
+      - db
+      - svix-server
+
+  stack-auth-dashboard:
+    container_name: stack-auth.dashboard
+    image: stack-auth/dashboard
+    networks:
+      - stack-auth-network
+    env_file:
+      - .env.dashboard
+      - .env.sentry
+    depends_on:
+      - stack-auth-backend
+
+  nginx:
+    image: nginx
+    container_name: nginx
+    networks:
+      stack-auth-network:
+        aliases:
+          - stack-auth.internal
+          - api.stack-auth.internal
+          - svix-api.stack-auth.internal
+    ports:
+      - 443:443
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./certs:/etc/nginx/ssl:ro
+    depends_on:
+      - stack-auth-dashboard
+    
+  # ================= PostgreSQL =================
+
+  db:
+    container_name: stack-auth.db
+    image: postgres:latest
+    networks:
+      - stack-auth-network
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_STACKFRAME_PASSWORD}
+      POSTGRES_DB: stackframe
+      POSTGRES_DELAY_MS: ${POSTGRES_DELAY_MS:-0}
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    entrypoint: ["sh", "-c", "
+      if [ $POSTGRES_DELAY_MS -gt 0 ]; then 
+        apt-get update && apt-get install -y iproute2 && \
+        tc qdisc add dev eth0 root netem delay ${POSTGRES_DELAY_MS}ms;
+      fi;
+      exec docker-entrypoint.sh postgres"]
+    cap_add:
+      - NET_ADMIN
+
+  # ================= svix =================
+
+  svix-db:
+    container_name: stack-auth.svix.db
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_SVIX_PASSWORD}
+      POSTGRES_DB: svix
+    networks:
+      - stack-auth-network
+    volumes:
+      - svix-postgres-data:/var/lib/postgresql/data
+    
+  svix-redis:
+    container_name: stack-auth.redis.db
+    image: docker.io/redis:7-alpine
+    command: --save 60 500 --appendonly yes --appendfsync everysec
+    networks:
+      - stack-auth-network
+    volumes:
+      - svix-redis-data:/data
+
+  svix-server:
+    container_name: stack-auth.svix
+    image: svix/svix-server
+    environment:
+      WAIT_FOR: 'true'
+      SVIX_REDIS_DSN: redis://svix-redis:6379
+      SVIX_DB_DSN: postgres://postgres:${POSTGRES_SVIX_PASSWORD}@svix-db:5432/svix
+      SVIX_CACHE_TYPE: memory
+      SVIX_JWT_SECRET: secret
+      SVIX_LOG_LEVEL: trace
+      SVIX_QUEUE_TYPE: redis
+    networks:
+      - stack-auth-network
+    ports:
+      - 8113:8071
+    depends_on:
+      - svix-redis
+      - svix-db
+
+# ================= volumes =================
+
+volumes:
+  postgres-data:
+    name: stack_auth_postgres_data
+  svix-redis-data:
+    name: stack_auth_svix_redis_data
+  svix-postgres-data:
+    name: stack_auth_svix_postgres_data
+
+networks:
+  stack-auth-network:
+    driver: bridge
+    name: stack_auth_network

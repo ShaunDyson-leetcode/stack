@@ -1,42 +1,42 @@
-*.untracked
-*.untracked.*
+**/*.untracked
+**/*.untracked.*
 
 
 
-.vercel
+**/.vercel
 
 # Misc
-.DS_Store
-.eslintcache
-.env.local
-.env.*.local
+**/.DS_Store
+**/.eslintcache
+**/.env.local
+**/.env.*.local
 
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-firebase-debug.log
-ui-debug.log
-.pnpm-debug.log
-.husky
-tmp
+**/npm-debug.log*
+**/yarn-debug.log*
+**/yarn-error.log*
+**/firebase-debug.log
+**/ui-debug.log
+**/.pnpm-debug.log
+**/.husky
+**/tmp
 
-vitest.config.ts.timestamp-*
-tsup.config.bundled_*
+**/vitest.config.ts.timestamp-*
+**/tsup.config.bundled_*
 
 # Dependencies
-node_modules
+**/node_modules
 
 # Build dirs
-.next
-build
-dist
+**/.next
+**/build
+**/dist
 
 # Generated files
-.docusaurus
-.cache-loader
-**.tsbuildinfo
+**/.docusaurus
+**/.cache-loader
+**/**.tsbuildinfo
 
-.xata*
+**/.xata*
 
 # VS
 /.vs/slnx.sqlite-journal
@@ -52,26 +52,26 @@ dist
 /_work
 
 # DB
-dev.db*
+**/dev.db*
 packages/adapter-prisma/prisma/dev.db
 packages/adapter-prisma/prisma/migrations
-db.sqlite
+**/db.sqlite
 packages/adapter-supabase/supabase/.branches
 packages/adapter-drizzle/.drizzle
 
 # Tests
-coverage
-dynamodblocal-bin
-firestore-debug.log
-test.schema.gql
-test-results
-playwright-report
-blob-report
-playwright/.cache
+**/coverage
+**/dynamodblocal-bin
+**/firestore-debug.log
+**/test.schema.gql
+**/test-results
+**/playwright-report
+**/blob-report
+**/playwright/.cache
 
 
 # Turborepo
-.turbo
+**/.turbo
 
 # docusaurus
 docs/.docusaurus
@@ -108,13 +108,22 @@ docs/docs/reference/express
 docs/docs/reference/adapter
 
 ## Drizzle migration folder
-.drizzle
+**/.drizzle
 
 # Sentry Config File
-.sentryclirc
+**/.sentryclirc
 
 # python
-__pycache__/
-.venv/
+**/__pycache__/
+**/.venv/
 
-docker/**/.env
+# env
+**/.env.*
+**/.env
+
+# ignore
+apps/e2e
+apps/oauth-mock-server
+examples
+.vscode
+.changeset

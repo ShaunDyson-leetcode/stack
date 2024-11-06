@@ -28,8 +28,8 @@ const withConfiguredSentryConfig = (nextConfig) =>
 
       // Suppresses source map uploading logs during build
       silent: true,
-      org: "stackframe-pw",
-      project: "stack-server",
+      org: process.env.NEXT_PUBLIC_SENTRY_ORG,
+      project: process.env.NEXT_PUBLIC_SENTRY_PROJECT,
     },
     {
       // For all available options, see:
@@ -63,6 +63,7 @@ const withConfiguredSentryConfig = (nextConfig) =>
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: "standalone",
   pageExtensions: ["js", "jsx", "mdx", "ts", "tsx"],
 
   // we're open-source, so we can provide source maps
