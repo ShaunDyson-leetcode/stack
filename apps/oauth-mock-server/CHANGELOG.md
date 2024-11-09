@@ -1,5 +1,20 @@
 # @stackframe/oauth-mock-server
 
+## 2.6.21
+
+### Patch Changes
+
+- Fixed inviteUser
+- Updated dependencies
+  - @stackframe/stack-shared@2.6.21
+
+## 2.6.20
+
+### Patch Changes
+
+- Updated dependencies
+  - @stackframe/stack-shared@2.6.20
+
 ## 2.6.19
 
 ### Patch Changes

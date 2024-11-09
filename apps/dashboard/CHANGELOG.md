@@ -1,5 +1,27 @@
 # @stackframe/stack-dashboard
 
+## 2.6.21
+
+### Patch Changes
+
+- Fixed inviteUser
+- Updated dependencies
+  - @stackframe/stack-emails@2.6.21
+  - @stackframe/stack-shared@2.6.21
+  - @stackframe/stack-ui@2.6.21
+  - @stackframe/stack@2.6.21
+
+## 2.6.20
+
+### Patch Changes
+
+- Next.js 15 fixes
+- Updated dependencies
+  - @stackframe/stack-emails@2.6.20
+  - @stackframe/stack-shared@2.6.20
+  - @stackframe/stack-ui@2.6.20
+  - @stackframe/stack@2.6.20
+
 ## 2.6.19
 
 ### Patch Changes
