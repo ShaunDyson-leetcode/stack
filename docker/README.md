@@ -101,6 +101,7 @@ Go to folder `docker/stack-auth-setup`
    - Add `https://stack-auth.internal`, `svix-api.stack-auth.internal`, `api.stack-auth.internal` to your DNS hosts.
    - Expose ports:
       - 443
+      - 8111 (Optional: database)
 
 8. **User Signup**
    - Access `https://stack-auth.internal` and complete the signup process.
