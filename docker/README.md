@@ -14,7 +14,11 @@ You need three folders:
 2. server for services - run your docker
    - `docker/stack-auth-services`
       ```sh
-      wget https://github.com/ShaunDyson-leetcode/stack/archive/refs/heads/dev.zip -O repo.zip && unzip -j repo.zip "stack-dev/docker/stack-auth-services/*" -d stack-auth-services && rm repo.zip
+      wget https://github.com/ShaunDyson-leetcode/stack/archive/refs/heads/dev.zip -O repo.zip
+      unzip repo.zip "stack-dev/docker/stack-auth-services/*" -d stack-auth-services
+      mv stack-auth-services/stack-dev/docker/stack-auth-services/* stack-auth-services
+      rm -rvf stack-auth-services/stack-dev
+      rm repo.zip
       ```
 
 ### Setup
@@ -148,3 +152,8 @@ Go to the builder server.
    - `https://stack-auth.internal`
    - `svix-api.stack-auth.internal`
    - `api.stack-auth.internal`
+
+
+``` sh
+pnpm prisma migrate diff   --from-empty   --to-schema-datamodel ../../apps/backend/prisma/schema.prisma   --script > ../stack-auth-services/volumes/db/stack-auth-init.sql
+```
