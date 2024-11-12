@@ -3,9 +3,9 @@ services:
   stack-auth-dashboard:
     image: stack-auth/dashboard
     build:
-      context: ../..
+      context: ../
       target: dashboard
-      dockerfile: ./docker/stack-auth-builder/Dockerfile
+      dockerfile: ./docker/Dockerfile
       args:  # Pass all necessary variables for build
         NEXT_PUBLIC_STACK_URL: ${NEXT_PUBLIC_STACK_URL}
         NEXT_PUBLIC_STACK_PROJECT_ID: ${NEXT_PUBLIC_STACK_PROJECT_ID}
@@ -20,9 +20,9 @@ services:
   stack-auth-backend:
     image: stack-auth/backend
     build:
-      context: ../..
+      context: ../
       target: backend
-      dockerfile: ./docker/stack-auth-builder/Dockerfile
+      dockerfile: ./docker/Dockerfile
       args:  # Pass all necessary variables for build
         NEXT_PUBLIC_SENTRY_DSN: ${NEXT_PUBLIC_SENTRY_DSN}
         NEXT_PUBLIC_SENTRY_ORG: ${NEXT_PUBLIC_SENTRY_ORG}
