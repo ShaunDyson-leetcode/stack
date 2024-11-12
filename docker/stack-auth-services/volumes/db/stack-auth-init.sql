@@ -774,3 +774,68 @@ ALTER TABLE "ProxiedEmailServiceConfig" ADD CONSTRAINT "ProxiedEmailServiceConfi
 -- AddForeignKey
 ALTER TABLE "StandardEmailServiceConfig" ADD CONSTRAINT "StandardEmailServiceConfig_projectConfigId_fkey" FOREIGN KEY ("projectConfigId") REFERENCES "EmailServiceConfig"("projectConfigId") ON DELETE CASCADE ON UPDATE CASCADE;
 
+\set publishableClientKey `echo "'$NEXT_PUBLIC_STACK_PUBLISHABLE_CLIENT_KEY'"`
+\set secretServerKey `echo "'$STACK_SECRET_SERVER_KEY'"`
+\set superSecretAdminKey `echo "'$STACK_SUPER_SECRET_ADMIN_KEY'"`
+
+-- Insert data into ProjectConfig
+INSERT INTO public."ProjectConfig" (id, "createdAt", "updatedAt", "allowLocalhost", "signUpEnabled", "createTeamOnSignUp", "clientTeamCreationEnabled", "clientUserDeletionEnabled", "legacyGlobalJwtSigning", "teamCreateDefaultSystemPermissions", "teamMemberDefaultSystemPermissions")
+VALUES
+('a36222cf-028b-4287-9606-89c49790cb18', NOW(), NOW(), 't', 't', 'f', 't', 'f', 'f', NULL, NULL);
+
+-- Insert data into Project
+INSERT INTO public."Project" (id, "createdAt", "updatedAt", "displayName", description, "configId", "isProductionMode")
+VALUES
+('internal', NOW(), NOW(), 'Stack Dashboard', 'Stack Dashboard Stack''s admin dashboard', 'a36222cf-028b-4287-9606-89c49790cb18', 'f');
+
+-- Insert data into ApiKeySet
+INSERT INTO public."ApiKeySet" ("projectId", id, "createdAt", "updatedAt", description, "expiresAt", "manuallyRevokedAt", "publishableClientKey", "secretServerKey", "superSecretAdminKey")
+VALUES
+('internal', 'cbd08984-6100-40ea-86c0-bf1c5b6bd638', NOW(), NOW(), 'Internal API key set', '2099-12-31 23:59:59', NULL, :publishableClientKey, :secretServerKey, :superSecretAdminKey);
+
+-- Insert data into AuthMethodConfig
+INSERT INTO public."AuthMethodConfig" ("projectConfigId", id, "createdAt", "updatedAt", enabled)
+VALUES
+('a36222cf-028b-4287-9606-89c49790cb18', '6478b9ae-01ed-4362-b6f5-8df59ae53432', NOW(), NOW(), 't'),
+('a36222cf-028b-4287-9606-89c49790cb18', '22bba3fa-1c7c-4645-8dbd-9b51a2fbdbaa', NOW(), NOW(), 't'),
+('a36222cf-028b-4287-9606-89c49790cb18', '1271bcb2-a785-4746-a871-81f841e2c8e4', NOW(), NOW(), 't'),
+('a36222cf-028b-4287-9606-89c49790cb18', '1e22b7a4-5047-4165-a987-3e0f1a0c738f', NOW(), NOW(), 't'),
+('a36222cf-028b-4287-9606-89c49790cb18', 'c3047a5f-9198-4da6-b988-627bfc86e579', NOW(), NOW(), 't'),
+('a36222cf-028b-4287-9606-89c49790cb18', '416192c9-8663-4e72-8928-252041548430', NOW(), NOW(), 't');
+
+-- Insert data into EmailServiceConfig
+INSERT INTO public."EmailServiceConfig" ("projectConfigId", "createdAt", "updatedAt")
+VALUES
+('a36222cf-028b-4287-9606-89c49790cb18', NOW(), NOW());
+
+-- Insert data into OAuthProviderConfig
+INSERT INTO public."OAuthProviderConfig" ("projectConfigId", id, "authMethodConfigId", "connectedAccountConfigId", "createdAt", "updatedAt")
+VALUES
+('a36222cf-028b-4287-9606-89c49790cb18', 'microsoft', '1271bcb2-a785-4746-a871-81f841e2c8e4', NULL, NOW(), NOW()),
+('a36222cf-028b-4287-9606-89c49790cb18', 'google', '1e22b7a4-5047-4165-a987-3e0f1a0c738f', NULL, NOW(), NOW()),
+('a36222cf-028b-4287-9606-89c49790cb18', 'spotify', 'c3047a5f-9198-4da6-b988-627bfc86e579', NULL, NOW(), NOW()),
+('a36222cf-028b-4287-9606-89c49790cb18', 'github', '416192c9-8663-4e72-8928-252041548430', NULL, NOW(), NOW());
+
+
+-- Insert data into ProxiedEmailServiceConfig
+INSERT INTO public."ProxiedEmailServiceConfig" ("projectConfigId", "createdAt", "updatedAt")
+VALUES
+('a36222cf-028b-4287-9606-89c49790cb18', NOW(), NOW());
+
+-- Insert data into ProxiedOAuthProviderConfig
+INSERT INTO public."ProxiedOAuthProviderConfig" ("projectConfigId", id, "createdAt", "updatedAt", type)
+VALUES
+('a36222cf-028b-4287-9606-89c49790cb18', 'github', NOW(), NOW(), 'GITHUB'),
+('a36222cf-028b-4287-9606-89c49790cb18', 'spotify', NOW(), NOW(), 'SPOTIFY'),
+('a36222cf-028b-4287-9606-89c49790cb18', 'google', NOW(), NOW(), 'GOOGLE'),
+('a36222cf-028b-4287-9606-89c49790cb18', 'microsoft', NOW(), NOW(), 'MICROSOFT');
+
+-- Insert data into OtpAuthMethodConfig
+INSERT INTO public."OtpAuthMethodConfig" ("projectConfigId", "authMethodConfigId", "createdAt", "updatedAt", "contactChannelType")
+VALUES
+('a36222cf-028b-4287-9606-89c49790cb18', '6478b9ae-01ed-4362-b6f5-8df59ae53432', NOW(), NOW(), 'EMAIL');
+
+-- Insert data into PasswordAuthMethodConfig
+INSERT INTO public."PasswordAuthMethodConfig" ("projectConfigId", "authMethodConfigId", "createdAt", "updatedAt")
+VALUES
+('a36222cf-028b-4287-9606-89c49790cb18', '22bba3fa-1c7c-4645-8dbd-9b51a2fbdbaa', NOW(), NOW());

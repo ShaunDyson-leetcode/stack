@@ -17,8 +17,6 @@ services:
         NEXT_PUBLIC_SENTRY_ORG: ${NEXT_PUBLIC_SENTRY_ORG}
         NEXT_PUBLIC_SENTRY_PROJECT: ${NEXT_PUBLIC_SENTRY_PROJECT}
         SENTRY_AUTH_TOKEN: ${SENTRY_AUTH_TOKEN}
-    ports:
-      - 8101:8101
   stack-auth-backend:
     image: stack-auth/backend
     build:
@@ -31,5 +29,3 @@ services:
         NEXT_PUBLIC_SENTRY_PROJECT: ${NEXT_PUBLIC_SENTRY_PROJECT}
         SENTRY_AUTH_TOKEN: ${SENTRY_AUTH_TOKEN}
         STACK_SERVER_SECRET: ${STACK_SERVER_SECRET}
-    ports:
-      - 8102:8102
