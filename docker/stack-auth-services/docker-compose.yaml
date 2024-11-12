@@ -11,9 +11,30 @@ services:
       STACK_SVIX_SERVER_URL: http://svix-server:8071
       STACK_DATABASE_CONNECTION_STRING: postgres://postgres:${POSTGRES_STACKFRAME_PASSWORD}@db:5432/stackframe
       STACK_DIRECT_DATABASE_CONNECTION_STRING: postgres://postgres:${POSTGRES_STACKFRAME_PASSWORD}@db:5432/stackframe
-    env_file:
-      - .env.backend
-      - .env.sentry
+      STACK_SERVER_SECRET: ${STACK_SERVER_SECRET}
+      STACK_SVIX_API_KEY: ${STACK_SVIX_API_KEY}
+      STACK_OAUTH_MOCK_URL: ${STACK_OAUTH_MOCK_URL}
+      STACK_GITHUB_CLIENT_ID: ${STACK_GITHUB_CLIENT_ID}
+      STACK_GITHUB_CLIENT_SECRET: ${STACK_GITHUB_CLIENT_SECRET}
+      STACK_GOOGLE_CLIENT_ID: ${STACK_GOOGLE_CLIENT_ID}
+      STACK_GOOGLE_CLIENT_SECRET: ${STACK_GOOGLE_CLIENT_SECRET}
+      STACK_MICROSOFT_CLIENT_ID: ${STACK_MICROSOFT_CLIENT_ID}
+      STACK_MICROSOFT_CLIENT_SECRET: ${STACK_MICROSOFT_CLIENT_SECRET}
+      STACK_SPOTIFY_CLIENT_ID: ${STACK_SPOTIFY_CLIENT_ID}
+      STACK_SPOTIFY_CLIENT_SECRET: ${STACK_SPOTIFY_CLIENT_SECRET}
+      STACK_EMAIL_HOST: ${STACK_EMAIL_HOST}
+      STACK_EMAIL_PORT: ${STACK_EMAIL_PORT}
+      STACK_EMAIL_SECURE: ${STACK_EMAIL_SECURE}
+      STACK_EMAIL_USERNAME: ${STACK_EMAIL_USERNAME}
+      STACK_EMAIL_PASSWORD: ${STACK_EMAIL_PASSWORD}
+      STACK_EMAIL_SENDER: ${STACK_EMAIL_SENDER}
+      STACK_ACCESS_TOKEN_EXPIRATION_TIME: ${STACK_ACCESS_TOKEN_EXPIRATION_TIME}
+      STACK_SETUP_ADMIN_GITHUB_ID: ${STACK_SETUP_ADMIN_GITHUB_ID}
+      OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT}
+      NEXT_PUBLIC_SENTRY_DSN: ${NEXT_PUBLIC_SENTRY_DSN}
+      NEXT_PUBLIC_SENTRY_ORG: ${NEXT_PUBLIC_SENTRY_ORG}
+      NEXT_PUBLIC_SENTRY_PROJECT: ${NEXT_PUBLIC_SENTRY_PROJECT}
+      SENTRY_AUTH_TOKEN: ${SENTRY_AUTH_TOKEN}
     ports:
       - 8102:8102
     depends_on:
@@ -25,9 +46,15 @@ services:
     image: stack-auth/dashboard
     networks:
       - stack-auth-network
-    env_file:
-      - .env.dashboard
-      - .env.sentry
+    environment:
+      NEXT_PUBLIC_STACK_URL: ${NEXT_PUBLIC_STACK_URL}
+      NEXT_PUBLIC_STACK_PROJECT_ID: ${NEXT_PUBLIC_STACK_PROJECT_ID}
+      NEXT_PUBLIC_STACK_PUBLISHABLE_CLIENT_KEY: ${NEXT_PUBLIC_STACK_PUBLISHABLE_CLIENT_KEY}
+      STACK_SECRET_SERVER_KEY: ${STACK_SERVER_SECRET}
+      NEXT_PUBLIC_STACK_SVIX_SERVER_URL: ${NEXT_PUBLIC_STACK_SVIX_SERVER_URL}
+      STACK_ACCESS_TOKEN_EXPIRATION_TIME: ${STACK_ACCESS_TOKEN_EXPIRATION_TIME}
+      NEXT_PUBLIC_STACK_HEAD_TAGS: ${NEXT_PUBLIC_STACK_HEAD_TAGS}
+      NODE_TLS_REJECT_UNAUTHORIZED: ${NODE_TLS_REJECT_UNAUTHORIZED}
     depends_on:
       - stack-auth-backend
 
@@ -43,8 +70,8 @@ services:
     ports:
       - 443:443
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./certs:/etc/nginx/ssl:ro
+      - ./volumes/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./volumes/nginx/certs:/etc/nginx/ssl:ro
     depends_on:
       - stack-auth-dashboard
     
@@ -63,6 +90,7 @@ services:
     ports:
       - 8111:5432
     volumes:
+      - ./volumes/db/stack-auth-init.sql:/docker-entrypoint-initdb.d/99-stack-auth-init.sql:Z
       - postgres-data:/var/lib/postgresql/data
     entrypoint: ["sh", "-c", "
       if [ $POSTGRES_DELAY_MS -gt 0 ]; then 
